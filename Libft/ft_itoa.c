@@ -19,7 +19,7 @@ static char	*ft_itoa_malloc(int n)
 {
 	char	*s;
 
-	s = (char *)malloc(ft_inlen(n)) + 2;
+	s = (char *)malloc(ft_inlen(n) + 2);
 	if (!s)
 		return (NULL);
 	return (s);
