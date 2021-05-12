@@ -15,4 +15,3 @@ void	*ft_memcpy(void *dest, const void *src, size_t n)
 		*s1++ = *s2++;
 	return (s1);
 }
-
