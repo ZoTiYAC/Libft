@@ -1,85 +1,73 @@
 #include "libft.h"
 
-static char	**ft_malloc(char const *s, char c)
+static size_t	ft_count_words(char const *s, char c)
 {
+	size_t	len;
 	size_t	i;
-	char	**split;
-	size_t	total;
 
 	i = 0;
-	total = 0;
+	len = 0;
 	while (s[i])
 	{
-		if (s[i] == c)
-			total++;
-		i++;
+		while (s[i] == c && s[i])
+			i++;
+		if (s[i] != c && s[i])
+			len++;
+		while (s[i] && s[i] != c)
+			i++;
 	}
-	split = (char **)malloc(sizeof(s) * (total + 2));
-	if (!split)
-		return (NULL);
-	return (split);
+	return (len);
 }
 
-void	*ft_free(char **split, size_t elts)
+static char	**ft_clean(char **array)
 {
 	size_t	i;
 
 	i = 0;
-	while (i < elts)
+	while (array[i])
 	{
-		free(split[i]);
+		free (array[i]);
 		i++;
 	}
-	free(split);
+	free (array);
 	return (NULL);
 }
 
-static void	*ft_subsplit(char **split, char const *s, t_strs *st, t_strs *lt)
-{
-	split[lt->len] = ft_substr(s, st->start, st->len);
-	if (!split[lt->len])
-		return (ft_free(split, lt->len));
-	lt->len++;
-	return (split);
-}
-
-static void	*ft_findsplit(char **split, char const *s, char c)
+static size_t	ft_words_len(char const *s, char c)
 {
 	size_t	i;
-	t_strs	st;
-	t_strs	lt;
 
 	i = 0;
-	lt.len = 0;
-	lt.start = 0;
-	while (s[i])
+	while (*s != c && *s)
 	{
-		if (s[i] == c)
-		{
-			st.start = lt.start;
-			st.len = (i - lt.start);
-			if (i > lt.start && !ft_subsplit(split, s, &st, &lt))
-				return (NULL);
-			lt.start = i + 1;
-		}
+		s++;
 		i++;
 	}
-	st.start = lt.start;
-	st.len = (i - lt.start);
-	if (i > lt.start && i > 0 && !ft_subsplit(split, s, &st, &lt))
-		return (NULL);
-	split[lt.len] = 0;
-	return (split);
+	return (i);
 }
 
 char	**ft_split(char const *s, char c)
 {
-	char	**strs;
+	char		**array;
+	size_t		len_str;
+	size_t		i;
 
-	strs = ft_malloc(s, c);
-	if (!strs)
+	if (!s)
 		return (NULL);
-	if (!ft_findsplit(strs, s, c))
+	i = 0;
+	len_str = ft_count_words(s, c);
+	array = ft_calloc(sizeof(char *), (len_str + 1));
+	if (!array)
 		return (NULL);
-	return (strs);
+	while (i < len_str)
+	{
+		while (*s == c && *s)
+			s++;
+		array[i] = ft_substr(s, 0, ft_words_len(s, c));
+		if (array[i] == NULL)
+			return (ft_clean(array));
+		s = s + ft_words_len(s, c);
+		i++;
+	}
+	return (array);
 }
